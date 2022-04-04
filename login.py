@@ -1,32 +1,38 @@
 
+from asyncio.windows_events import NULL
 from cProfile import label
 from cgitb import text
 from sqlite3 import Cursor
 from tkinter import*
 from tkinter import ttk
 from turtle import bgcolor, color
-import mysql.connector
+import mysql.connector as mysql
 from home import*
-from signin import Sign_Window
+from signin import*
 
 
-class Login_Window:
-    def temp(self, root):
-        # if(self.txtuser == '' and self.txtpass == ''):
-        #     MessageBox.showinfo("Insert Status", "All Field are required")
-        # else:
-        #     con = mysql.connect(host='localhost', user='root',
-        #                         password='Shivam@$12', database='expensetracker')
-        #     cursor = con.cursor()
-        #     cursor.execute()
-        #     cursor.execute("commit")
-        #     MessageBox.showinfo("Login Status", "Login Successfully")
-        #     con.close()
-        root.destroy()
-        h = Home()
+class Login_Window():
+    def login_to_home(self, root):
+        if(self.txtuser.get() == '' or self.txtpass.get() == ''):
+            MessageBox.showinfo("Insert Status", "All Field are required")
+        else:
+            con = mysql.connect(host='localhost', user='root',
+                                password='Mahendra@$28', database='expensetracker')
+            cursor = con.cursor()
+            cursor.execute("select* from signupdata where username = %s and password = %s", (self.txtuser.get(), self.txtpass.get()))
+            data = cursor.fetchone()
+            cursor.execute("commit")
+            con.close()
+            if(data == None):
+                MessageBox.showerror("ERROR", "Invalid Credentials")
+            else:
+                print(data)
+                MessageBox.showinfo("Login Status", "Login Successfully")
+                root.destroy()
+                h = Home()
 
-    def temp1():
-        root.destroy()
+    def login_to_signin():
+        # root.destroy()
         sw = Sign_Window()
 
     def __init__(self, root):
@@ -62,11 +68,11 @@ class Login_Window:
         self.txtpass.place(x=60, y=250)
 
         loginbtn = Button(frame, text="Login", font=("times new roman", 19, "bold"),
-                          bd=3, relief=RIDGE, fg="Black", command=lambda: Login_Window.temp(self, root))
+                          bd=3, relief=RIDGE, fg="Black", command =lambda: Login_Window.login_to_home(self, root))
         loginbtn.place(x=35, y=350, width=120, height=35)
 
         signinbtn = Button(frame, text="Sign in", font=("times new roman", 19, "bold"),
-                           bd=3, relief=RIDGE, fg="Black", command=lambda: Login_Window.temp1())
+                           bd=3, relief=RIDGE, fg="Black", command=lambda: Login_Window.login_to_signin())
         signinbtn.place(x=175, y=350, width=120, height=35)
 
 

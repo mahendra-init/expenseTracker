@@ -17,38 +17,38 @@ class Home():
             print(date)
             edata = [date, category, expense]
             Self.TVExpenses.insert('', 'end', values=edata)
-            if(date == '' or category == '' or expense == ''):
-                MessageBox.showinfo("Insert Status", "All Field are required")
-            else:
-                con = mysql.connect(host='localhost', user='root',
-                                    password='Shivam@$12', database='expensetracker')
-                cursor = con.cursor()
-                cursor.execute("insert into expenses values('" +
-                               date+"','"+category+"','"+expense+"')")
-                cursor.execute("commit")
-                MessageBox.showinfo("Insert Status", "Inserted Successfully")
-                con.close()
+            # if(date == '' or category == '' or expense == ''):
+            #     MessageBox.showinfo("Insert Status", "All Field are required")
+            # else:
+            #     con = mysql.connect(host='localhost', user='root',
+            #                         password='Mahendra@$28', database='expensetracker')
+            #     cursor = con.cursor()
+            #     cursor.execute("insert into expenses values('" +
+            #                    date+"','"+category+"','"+expense+"')")
+            #     cursor.execute("commit")
+            #     MessageBox.showinfo("Insert Status", "Inserted Successfully")
+            #     con.close()
         elif(a == "i"):
             date = Self.EDate2.get()
             source = Self.ESource.get()
             income = Self.EIncome.get()
             idata = [date, source, income]
             Self.TVIncome.insert('', 'end', values=idata)
-            if(date == '' or source == '' or income == ''):
-                MessageBox.showinfo("Insert Status", "All Field are required")
-            else:
-                try:
-                    con = mysql.connect(host='localhost', user='root',
-                                        password='Shivam@$12', database='expensetracker')
-                    cursor = con.cursor()
-                    cursor.execute("insert into income values('" +
-                                   date+"','"+source+"','"+income+"')")
-                    cursor.execute("commit")
-                    MessageBox.showinfo(
-                        "Insert Status", "Inserted Successfully")
-                    con.close()
-                except:
-                    print("-----")
+            # if(date == '' or source == '' or income == ''):
+            #     MessageBox.showinfo("Insert Status", "All Field are required")
+            # else:
+            #     try:
+            #         con = mysql.connect(host='localhost', user='root',
+            #                             password='Mahendra@$28', database='expensetracker')
+            #         cursor = con.cursor()
+            #         cursor.execute("insert into income values('" +
+            #                        date+"','"+source+"','"+income+"')")
+            #         cursor.execute("commit")
+            #         MessageBox.showinfo(
+            #             "Insert Status", "Inserted Successfully")
+            #         con.close()
+                # except:
+                #     print("-----")
 
     def __init__(Self):
         Self.GUI = Tk()
