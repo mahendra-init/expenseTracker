@@ -1,20 +1,27 @@
+import calendar
+import datetime
+import locale
 from tkinter import *
 from tkinter import ttk
 from turtle import bgcolor
 from typing_extensions import Self
 from tkinter import messagebox as MessageBox
+from MySQLdb import Date
+from numpy import var
 from tkcalendar import DateEntry
 from tkinter.ttk import Notebook
 import mysql.connector as mysql
 
 
+EX_CATEGORIES = ['Food', 'Clothing','Shopping', 'Entertainment', 'Education', 'Personal', 'Medical', 'Transportation', 'Bills']
+PAY_WAYS = ['Cash', 'UPI', 'Cheque', 'Other']
+IN_CATEGORIES = ['Salary', 'Others']
 class Home():
     def AddtoDB(Self, a):
         if(a == "e"):
             date = Self.Edate.get()
-            category = Self.ETitle.get()
+            category = Self.choosed_cate.get()
             expense = Self.EExpense.get()
-            print(date)
             edata = [date, category, expense]
             Self.TVExpenses.insert('', 'end', values=edata)
             # if(date == '' or category == '' or expense == ''):
@@ -29,8 +36,8 @@ class Home():
             #     MessageBox.showinfo("Insert Status", "Inserted Successfully")
             #     con.close()
         elif(a == "i"):
-            date = Self.EDate2.get()
-            source = Self.ESource.get()
+            date = Self.Idate.get()
+            source = Self.choosed_source.get()
             income = Self.EIncome.get()
             idata = [date, source, income]
             Self.TVIncome.insert('', 'end', values=idata)
@@ -50,13 +57,13 @@ class Home():
                 # except:
                 #     print("-----")
 
-    def __init__(Self):
-        Self.GUI = Tk()
-        Self.GUI.title("Expense Tracker")
-        Self.GUI.geometry('700x500+300+100')
-        Self.GUI.configure(bg='#b8c6db')
+    def __init__(Self, username):
+        Self.root = Tk()
+        Self.root.title("Expense Tracker")
+        Self.root.geometry('700x500+300+100')
+        Self.root.configure(bg='#b8c6db')
 
-        Self.Tab = Notebook(Self.GUI)
+        Self.Tab = Notebook(Self.root)
 
         Self.F1 = Frame(Self.Tab)
         Self.F2 = Frame(Self.Tab)
@@ -71,16 +78,18 @@ class Home():
         Self.LDate = Label(Self.F1, text='Date', font=(None, 18))
         Self.LDate.grid(row=1, column=0, padx=5, pady=5, sticky='w')
 
-        Self.Edate = Entry(Self.F1, font=(None, 18))
+        Self.Edate = DateEntry(Self.F1)
         Self.Edate.grid(row=1, column=1, padx=5, pady=5, sticky='w')
-
         # -------------------------------
 
-        Self.LTitle = Label(Self.F1, text='Title', font=(None, 18))
-        Self.LTitle.grid(row=2, column=0, padx=5, pady=5, sticky='w')
+        Self.category = Label(Self.F1, text='Category', font=(None, 18))
+        Self.category.grid(row=2, column=0, padx=5, pady=5, sticky='w')
 
-        Self.ETitle = Entry(Self.F1,  font=(None, 18))
-        Self.ETitle.grid(row=2, column=1, padx=5, pady=5, sticky='w')
+        Self.choosed_cate = StringVar()
+        Self.choosed_cate.set(EX_CATEGORIES[0])
+        Self.Ecategory = OptionMenu(Self.F1, Self.choosed_cate, *EX_CATEGORIES)
+        Self.Ecategory.configure(highlightthickness=2, width=15)
+        Self.Ecategory.grid(row=2, column=1, padx=5, pady=5, sticky='w')
 
         # --------------------------------
 
@@ -98,15 +107,19 @@ class Home():
         BF1Add.grid(row=4, column=1, padx=5, pady=5,
                     sticky='w', ipadx=10, ipady=10)
 
+        Self.Lbl = Label(Self.F1, text='Recents', font=(None, 15))
+        Self.Lbl.place(x = 15, y = 220)
+
         # ----------------------------------
 
-        TVList = ['Date', 'Title', 'Expenses']
+        TVList = ['Date', 'Category', 'Expenses']
         Self.TVExpenses = ttk.Treeview(
             Self.F1, columns=TVList, show='headings', height=5)
+        Self.TVExpenses.place(x= 20, y= 245)
         for i in TVList:
             Self.TVExpenses.heading(i, text=i.title())
-        Self.TVExpenses.grid(row=5, column=0, padx=5, pady=5,
-                             sticky='w', columnspan=3)
+        # Self.TVExpenses.grid(row=5, column=0, padx=5, pady=5,
+        #                      sticky='w', columnspan=3)
 
         # --------------------Expense End--------------
 
@@ -115,16 +128,20 @@ class Home():
         Self.LDate2 = Label(Self.F2, text='Date', font=(None, 18))
         Self.LDate2.grid(row=1, column=0, padx=5, pady=5, sticky='w')
 
-        Self.EDate2 = Entry(Self.F2,  font=(None, 18))
-        Self.EDate2.grid(row=1, column=1, padx=5, pady=5, sticky='w')
+        Self.Idate = DateEntry(Self.F2)
+        Self.Idate.grid(row=1, column=1, padx=5, pady=5, sticky='w')
 
         # -------------------------------
 
-        Self.LSource = Label(Self.F2, text='Source', font=(None, 18))
-        Self.LSource.grid(row=2, column=0, padx=5, pady=5, sticky='w')
 
-        Self.ESource = Entry(Self.F2, font=(None, 18))
-        Self.ESource.grid(row=2, column=1, padx=5, pady=5, sticky='w')
+        Self.source = Label(Self.F2, text='Source', font=(None, 18))
+        Self.source.grid(row=2, column=0, padx=5, pady=5, sticky='w')
+
+        Self.choosed_source = StringVar()
+        Self.choosed_source.set(IN_CATEGORIES[0])
+        Self.Icategory = OptionMenu(Self.F2, Self.choosed_source, *IN_CATEGORIES)
+        Self.Icategory.configure(highlightthickness=2, width=15)
+        Self.Icategory.grid(row=2, column=1, padx=5, pady=5, sticky='w')
 
         # --------------------------------
 
@@ -140,13 +157,19 @@ class Home():
                         command=lambda: Home.AddtoDB(Self, "i"))
         BF2Add.grid(row=4, column=1, padx=5, pady=5,
                     sticky='w', ipadx=10, ipady=10)
-
+        
+        Self.Lbl = Label(Self.F2, text='Recents', font=(None, 15))
+        Self.Lbl.place(x = 15, y = 220)
         # ----------------------------------
         TV = ['Date', 'Source', 'Income']
         Self.TVIncome = ttk.Treeview(
             Self.F2, columns=TV, show='headings', height=5)
+        Self.TVIncome.place(x= 20, y= 245)
         for j in TV:
             Self.TVIncome.heading(j, text=j.title())
-        Self.TVIncome.grid(row=5, column=0, padx=5, pady=5,
-                           sticky='w', columnspan=3)
-        Self.GUI.mainloop()
+        # Self.TVIncome.grid(row=5, column=0, padx=5, pady=5,
+        #                    sticky='w', columnspan=3)
+        Self.root.mainloop()
+
+
+# obj = Home("mahendra123")

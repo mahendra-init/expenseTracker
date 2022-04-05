@@ -7,8 +7,7 @@ from tkinter import*
 from tkinter import messagebox
 from turtle import bgcolor, color
 import mysql.connector as mysql
-# from login import *
-from login import Login_Window
+import login
 
 
 class Sign_Window():

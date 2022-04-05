@@ -8,11 +8,12 @@ from tkinter import ttk
 from turtle import bgcolor, color
 import mysql.connector as mysql
 from home import*
-from signin import*
+import signin
 
 
 class Login_Window():
     def login_to_home(self, root):
+        username = self.txtuser.get()
         if(self.txtuser.get() == '' or self.txtpass.get() == ''):
             MessageBox.showinfo("Insert Status", "All Field are required")
         else:
@@ -29,11 +30,10 @@ class Login_Window():
                 print(data)
                 MessageBox.showinfo("Login Status", "Login Successfully")
                 root.destroy()
-                h = Home()
+                h = Home(username)
 
     def login_to_signin():
-        # root.destroy()
-        sw = Sign_Window()
+        signin.Sign_Window()
 
     def __init__(self, root):
         self.root = root
