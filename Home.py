@@ -6,11 +6,11 @@ from tkinter import *
 from tkinter import messagebox as MessageBox
 from tkinter import ttk
 from tkinter.ttk import Notebook, Style
-from turtle import Screen, bgcolor
+from turtle import Screen, bgcolor, color
 import mysql.connector as mysql
 from tkcalendar import DateEntry
 from analysis import DataAnalysis as ana
-
+import utilities as ut
 
 EX_CATEGORIES = ['Food', 'Clothing','Shopping', 'Entertainment', 'Education', 'Personal', 'Medical', 'Transportation', 'Bills']
 PAY_WAYS = ['Cash', 'UPI', 'Cheque']
@@ -21,7 +21,7 @@ class Home():
                                         password='Mahendra@$28', database='expensetracker')
         cursor = con.cursor()
         if(a == "e"):
-            date = self.Edate.get()
+            date = ut.dateFormat(self.Edate.get())
             category = self.choosed_cate.get()
             description = self.ExDescription.get()
             expense = self.ExAmount.get()
@@ -35,7 +35,7 @@ class Home():
                 MessageBox.showinfo("Insert Status", "Inserted Successfully")
                 self.TVExpenses.insert('', 'end', values=edata)
         elif(a == "i"):
-            date = self.Idate.get()
+            date = ut.dateFormat(self.Idate.get())
             source = self.choosed_source.get()
             income = self.EIncome.get()
             idata = [date, source, income]
@@ -47,6 +47,19 @@ class Home():
                 MessageBox.showinfo("Insert Status", "Inserted Successfully")
                 self.TVIncome.insert('', 'end', values=idata)
         con.close()
+
+    # def extractData(username):
+    #     con = mysql.connect(host='localhost', user='root',
+    #                                     password='Mahendra@$28', database='expensetracker')
+    #     cursor = con.cursor()
+    #     cursor.execute("select* from expenses where username = '"+username+"'")
+    #     data = cursor.fetchall()
+    #     cursor.execute("commit")
+    #     con.close()
+    #     for i in data:
+    #         print(list(i))
+
+
 
     def __init__(self, username):
         self.username = username
@@ -75,7 +88,6 @@ class Home():
 
         self.Edate = DateEntry(self.F1)
         self.Edate.grid(row=1, column=1, padx=5, pady=5, sticky='w')
-        self.Edate.configure(width=23)
         # -------------------------------
 
         self.category = Label(self.F1, text='Category', font=(None, 16))
@@ -94,6 +106,9 @@ class Home():
 
         self.ExDescription = Entry(self.F1,  font=(None, 18))
         self.ExDescription.grid(row=3, column=1, padx=5, pady=5, sticky='w')
+
+        self.DescFormat = Label(self.F1, text='" Single & Double quotes are not allowed ! "', font=(None, 10), fg="#FF0000")
+        self.DescFormat.grid(row=3, column=2, padx=5, pady=5, sticky='w')
 
         self.LAmount = Label(self.F1, text='Amount', font=(None, 16))
         self.LAmount.grid(row=4, column=0, padx=5, pady=5, sticky='w')
@@ -125,9 +140,9 @@ class Home():
         self.TVExpenses = ttk.Treeview(
             self.F1, columns=TVList, show='headings', height=7)
         self.TVExpenses.place(x= 20, y= 285)
-        self.TVExpenses.column("Date", minwidth=0, width=50, stretch=NO, anchor=CENTER)
+        self.TVExpenses.column("Date", minwidth=0, width=80, stretch=NO, anchor=CENTER)
         self.TVExpenses.column("Category", minwidth=0, width=120, stretch=NO)
-        self.TVExpenses.column("Description", minwidth=0, width=280)
+        self.TVExpenses.column("Description", minwidth=0, width=250)
         self.TVExpenses.column("Amount Spent", minwidth=0, width=120, stretch=NO, anchor=CENTER)
         self.TVExpenses.column("Paid Through", minwidth=0, width=90, stretch=NO)
 
@@ -163,7 +178,6 @@ class Home():
 
         self.Idate = DateEntry(self.F2)
         self.Idate.grid(row=1, column=1, padx=5, pady=5, sticky='w')
-
         # -------------------------------
 
 
@@ -205,4 +219,5 @@ class Home():
         self.root.mainloop()
 
 
-obj = Home("mahendra123")
+# Home.extractData("mahendra123")
+Home("mahendra123")
