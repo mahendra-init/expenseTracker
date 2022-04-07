@@ -7,136 +7,134 @@ from tkinter import messagebox as MessageBox
 from tkinter import ttk
 from tkinter.ttk import Notebook, Style
 from turtle import Screen, bgcolor
-
 import mysql.connector as mysql
-from click import style
-from MySQLdb import Date
-from numpy import var
 from tkcalendar import DateEntry
-from typing_extensions import Self
+from analysis import DataAnalysis as ana
+
 
 EX_CATEGORIES = ['Food', 'Clothing','Shopping', 'Entertainment', 'Education', 'Personal', 'Medical', 'Transportation', 'Bills']
-PAY_WAYS = ['Cash', 'UPI', 'Cheque', 'Other']
+PAY_WAYS = ['Cash', 'UPI', 'Cheque']
 IN_CATEGORIES = ['Salary', 'Others']
 class Home():
-    username = var
-    def AddtoDB(Self, a):
+    def AddtoDB(self, a):
         con = mysql.connect(host='localhost', user='root',
                                         password='Mahendra@$28', database='expensetracker')
         cursor = con.cursor()
         if(a == "e"):
-            date = Self.Edate.get()
-            category = Self.choosed_cate.get()
-            description = Self.ExDescription.get()
-            expense = Self.ExAmount.get()
-            pay_ways = Self.choosed_method.get()
+            date = self.Edate.get()
+            category = self.choosed_cate.get()
+            description = self.ExDescription.get()
+            expense = self.ExAmount.get()
+            pay_ways = self.choosed_method.get()
             edata = [date, category, description, expense, pay_ways]
             if(date == '' or category == '' or expense == '' or pay_ways == ''):
                 MessageBox.showinfo("Insert Status", "All Field are required except 'Description' is optional!")
             else:
-                cursor.execute("insert into expenses values('"+date+"','"+category+"','"+description+"','"+expense+"','"+pay_ways+"','"+Self.username+"')")
+                cursor.execute("insert into expenses values('"+date+"','"+category+"','"+description+"','"+expense+"','"+pay_ways+"','"+self.username+"')")
                 cursor.execute("commit")
                 MessageBox.showinfo("Insert Status", "Inserted Successfully")
-                Self.TVExpenses.insert('', 'end', values=edata)
+                self.TVExpenses.insert('', 'end', values=edata)
         elif(a == "i"):
-            date = Self.Idate.get()
-            source = Self.choosed_source.get()
-            income = Self.EIncome.get()
+            date = self.Idate.get()
+            source = self.choosed_source.get()
+            income = self.EIncome.get()
             idata = [date, source, income]
             if(date == '' or source == '' or income == ''):
                 MessageBox.showinfo("Insert Status", "All Field are required")
             else:
-                cursor.execute("insert into incomes values('"+date+"','"+source+"','"+income+"','"+Self.username+"')")
+                cursor.execute("insert into incomes values('"+date+"','"+source+"','"+income+"','"+self.username+"')")
                 cursor.execute("commit")
                 MessageBox.showinfo("Insert Status", "Inserted Successfully")
-                Self.TVIncome.insert('', 'end', values=idata)
+                self.TVIncome.insert('', 'end', values=idata)
         con.close()
 
-    def __init__(Self, username):
-        Self.username = username
-        Self.root = Tk()
-        Self.root.title("Expense Tracker")
-        Self.root.geometry('700x500+300+100')
-        Self.root.configure(bg='#b8c6db')
+    def __init__(self, username):
+        self.username = username
+        self.root = Tk()
+        self.root.title("Expense Tracker")
+        self.root.geometry('700x500+300+100')
+        self.root.configure(bg='#b8c6db')
         style = ttk.Style()
         style.theme_use('alt')
-        Self.Tab = Notebook(Self.root)
+        self.Tab = Notebook(self.root)
 
-        Self.F1 = Frame(Self.Tab)
-        Self.F2 = Frame(Self.Tab)
+        self.F1 = Frame(self.Tab)
+        self.F2 = Frame(self.Tab)
+        self.F3 = ana.analysisFrame()
 
-        Self.Tab.add(Self.F1, text='Expense')
-        Self.Tab.add(Self.F2, text='Income')
+        self.Tab.add(self.F1, text='Expense')
+        self.Tab.add(self.F2, text='Income')
+        self.Tab.add(self.F3, text='Analysis')
 
-        Self.Tab.pack(fill=BOTH, expand=1)
+        self.Tab.pack(fill=BOTH, expand=1)
 
         # # --------------Expense------------------
 
-        Self.LDate = Label(Self.F1, text='Date', font=(None, 16))
-        Self.LDate.grid(row=1, column=0, padx=5, pady=5, sticky='w')
+        self.LDate = Label(self.F1, text='Date', font=(None, 16))
+        self.LDate.grid(row=1, column=0, padx=5, pady=5, sticky='w')
 
-        Self.Edate = DateEntry(Self.F1)
-        Self.Edate.grid(row=1, column=1, padx=5, pady=5, sticky='w')
-        Self.Edate.configure(width=23)
+        self.Edate = DateEntry(self.F1)
+        self.Edate.grid(row=1, column=1, padx=5, pady=5, sticky='w')
+        self.Edate.configure(width=23)
         # -------------------------------
 
-        Self.category = Label(Self.F1, text='Category', font=(None, 16))
-        Self.category.grid(row=2, column=0, padx=5, pady=5, sticky='w')
+        self.category = Label(self.F1, text='Category', font=(None, 16))
+        self.category.grid(row=2, column=0, padx=5, pady=5, sticky='w')
 
-        Self.choosed_cate = StringVar()
-        Self.choosed_cate.set(EX_CATEGORIES[0])
-        Self.Ecategory = OptionMenu(Self.F1, Self.choosed_cate, *EX_CATEGORIES)
-        Self.Ecategory.configure(highlightthickness=2, width=20)
-        Self.Ecategory.grid(row=2, column=1, padx=5, pady=5, sticky='w')
+        self.choosed_cate = StringVar()
+        self.choosed_cate.set(EX_CATEGORIES[0])
+        self.Ecategory = OptionMenu(self.F1, self.choosed_cate, *EX_CATEGORIES)
+        self.Ecategory.configure(highlightthickness=2, width=20)
+        self.Ecategory.grid(row=2, column=1, padx=5, pady=5, sticky='w')
 
         # --------------------------------
 
-        Self.LDescription = Label(Self.F1, text='Description', font=(None, 16))
-        Self.LDescription.grid(row=3, column=0, padx=5, pady=5, sticky='w')
+        self.LDescription = Label(self.F1, text='Description', font=(None, 16))
+        self.LDescription.grid(row=3, column=0, padx=5, pady=5, sticky='w')
 
-        Self.ExDescription = Entry(Self.F1,  font=(None, 18))
-        Self.ExDescription.grid(row=3, column=1, padx=5, pady=5, sticky='w')
+        self.ExDescription = Entry(self.F1,  font=(None, 18))
+        self.ExDescription.grid(row=3, column=1, padx=5, pady=5, sticky='w')
 
-        Self.LAmount = Label(Self.F1, text='Amount', font=(None, 16))
-        Self.LAmount.grid(row=4, column=0, padx=5, pady=5, sticky='w')
+        self.LAmount = Label(self.F1, text='Amount', font=(None, 16))
+        self.LAmount.grid(row=4, column=0, padx=5, pady=5, sticky='w')
 
-        Self.ExAmount = Entry(Self.F1,  font=(None, 18))
-        Self.ExAmount.grid(row=4, column=1, padx=5, pady=5, sticky='w')
+        self.ExAmount = Entry(self.F1,  font=(None, 18))
+        self.ExAmount.grid(row=4, column=1, padx=5, pady=5, sticky='w')
 
-        Self.LPay_meth = Label(Self.F1, text='Paid By: ', font=(None, 16))
-        Self.LPay_meth.grid(row=5, column=0, padx=5, pady=5, sticky='w')
+        self.LPay_meth = Label(self.F1, text='Paid By: ', font=(None, 16))
+        self.LPay_meth.grid(row=5, column=0, padx=5, pady=5, sticky='w')
 
-        Self.choosed_method = StringVar()
-        Self.choosed_method.set(PAY_WAYS[0])
-        Self.ExPayMethod = OptionMenu(Self.F1, Self.choosed_method, *PAY_WAYS)
-        Self.ExPayMethod.configure(highlightthickness=2, width=20)
-        Self.ExPayMethod.grid(row=5, column=1, padx=5, pady=5, sticky='w')
+        self.choosed_method = StringVar()
+        self.choosed_method.set(PAY_WAYS[0])
+        self.ExPayMethod = OptionMenu(self.F1, self.choosed_method, *PAY_WAYS)
+        self.ExPayMethod.configure(highlightthickness=2, width=20)
+        self.ExPayMethod.grid(row=5, column=1, padx=5, pady=5, sticky='w')
         # ---------------------------------
 
-        BF1Add = Button(Self.F1, text='Add Expense',
-                        command=lambda: Home.AddtoDB(Self, "e"))
+        BF1Add = Button(self.F1, text='Add Expense',
+                        command=lambda: Home.AddtoDB(self, "e"))
         BF1Add.grid(row=6, column=1, padx=20, pady=5,
                     sticky='w', ipadx=10, ipady=10)
 
-        Self.Lbl = Label(Self.F1, text='Recents', font=(None, 15))
-        Self.Lbl.place(x = 15, y = 250)
+        self.Lbl = Label(self.F1, text='Recents', font=(None, 15))
+        self.Lbl.place(x = 15, y = 250)
 
         # ----------------------------------
 
         TVList = ['Date', 'Category', 'Description', 'Amount Spent', 'Paid Through']
-        Self.TVExpenses = ttk.Treeview(
-            Self.F1, columns=TVList, show='headings', height=7)
-        Self.TVExpenses.place(x= 20, y= 285)
-        Self.TVExpenses.column("Date", minwidth=0, width=50, stretch=NO, anchor=CENTER)
-        Self.TVExpenses.column("Category", minwidth=0, width=120, stretch=NO)
-        Self.TVExpenses.column("Description", minwidth=0, width=280)
-        Self.TVExpenses.column("Amount Spent", minwidth=0, width=120, stretch=NO, anchor=CENTER)
-        Self.TVExpenses.column("Paid Through", minwidth=0, width=90, stretch=NO)
+        self.TVExpenses = ttk.Treeview(
+            self.F1, columns=TVList, show='headings', height=7)
+        self.TVExpenses.place(x= 20, y= 285)
+        self.TVExpenses.column("Date", minwidth=0, width=50, stretch=NO, anchor=CENTER)
+        self.TVExpenses.column("Category", minwidth=0, width=120, stretch=NO)
+        self.TVExpenses.column("Description", minwidth=0, width=280)
+        self.TVExpenses.column("Amount Spent", minwidth=0, width=120, stretch=NO, anchor=CENTER)
+        self.TVExpenses.column("Paid Through", minwidth=0, width=90, stretch=NO)
 
 
         for i in TVList:
-            Self.TVExpenses.heading(i, text=i.title())
-        # Self.TVExpenses.grid(row=5, column=0, padx=5, pady=5,
+            self.TVExpenses.heading(i, text=i.title())
+        # self.TVExpenses.grid(row=5, column=0, padx=5, pady=5,
         #                      sticky='w', columnspan=3)
 
         # --------------------Expense End--------------
@@ -160,51 +158,51 @@ class Home():
 
         # --------------------Income-------------------
 
-        Self.LDate2 = Label(Self.F2, text='Date', font=(None, 18))
-        Self.LDate2.grid(row=1, column=0, padx=5, pady=5, sticky='w')
+        self.LDate2 = Label(self.F2, text='Date', font=(None, 18))
+        self.LDate2.grid(row=1, column=0, padx=5, pady=5, sticky='w')
 
-        Self.Idate = DateEntry(Self.F2)
-        Self.Idate.grid(row=1, column=1, padx=5, pady=5, sticky='w')
+        self.Idate = DateEntry(self.F2)
+        self.Idate.grid(row=1, column=1, padx=5, pady=5, sticky='w')
 
         # -------------------------------
 
 
-        Self.source = Label(Self.F2, text='Source', font=(None, 18))
-        Self.source.grid(row=2, column=0, padx=5, pady=5, sticky='w')
+        self.source = Label(self.F2, text='Source', font=(None, 18))
+        self.source.grid(row=2, column=0, padx=5, pady=5, sticky='w')
 
-        Self.choosed_source = StringVar()
-        Self.choosed_source.set(IN_CATEGORIES[0])
-        Self.Icategory = OptionMenu(Self.F2, Self.choosed_source, *IN_CATEGORIES)
-        Self.Icategory.configure(highlightthickness=2, width=15)
-        Self.Icategory.grid(row=2, column=1, padx=5, pady=5, sticky='w')
+        self.choosed_source = StringVar()
+        self.choosed_source.set(IN_CATEGORIES[0])
+        self.Icategory = OptionMenu(self.F2, self.choosed_source, *IN_CATEGORIES)
+        self.Icategory.configure(highlightthickness=2, width=15)
+        self.Icategory.grid(row=2, column=1, padx=5, pady=5, sticky='w')
 
         # --------------------------------
 
-        Self.LIncome = Label(Self.F2, text='Income', font=(None, 18))
-        Self.LIncome.grid(row=3, column=0, padx=5, pady=5, sticky='w')
+        self.LIncome = Label(self.F2, text='Income', font=(None, 18))
+        self.LIncome.grid(row=3, column=0, padx=5, pady=5, sticky='w')
 
-        Self.EIncome = Entry(Self.F2, font=(None, 18))
-        Self.EIncome.grid(row=3, column=1, padx=5, pady=5, sticky='w')
+        self.EIncome = Entry(self.F2, font=(None, 18))
+        self.EIncome.grid(row=3, column=1, padx=5, pady=5, sticky='w')
 
         # ---------------------------------
 
-        BF2Add = Button(Self.F2, text='Add Income',
-                        command=lambda: Home.AddtoDB(Self, "i"))
+        BF2Add = Button(self.F2, text='Add Income',
+                        command=lambda: Home.AddtoDB(self, "i"))
         BF2Add.grid(row=4, column=1, padx=5, pady=5,
                     sticky='w', ipadx=10, ipady=10)
         
-        Self.Lbl = Label(Self.F2, text='Recents', font=(None, 15))
-        Self.Lbl.place(x = 15, y = 220)
+        self.Lbl = Label(self.F2, text='Recents', font=(None, 15))
+        self.Lbl.place(x = 15, y = 220)
         # ----------------------------------
         TV = ['Date', 'Source', 'Income']
-        Self.TVIncome = ttk.Treeview(
-            Self.F2, columns=TV, show='headings', height=5)
-        Self.TVIncome.place(x= 20, y= 245)
+        self.TVIncome = ttk.Treeview(
+            self.F2, columns=TV, show='headings', height=5)
+        self.TVIncome.place(x= 20, y= 245)
         for j in TV:
-            Self.TVIncome.heading(j, text=j.title())
-        # Self.TVIncome.grid(row=5, column=0, padx=5, pady=5,
+            self.TVIncome.heading(j, text=j.title())
+        # self.TVIncome.grid(row=5, column=0, padx=5, pady=5,
         #                    sticky='w', columnspan=3)
-        Self.root.mainloop()
+        self.root.mainloop()
 
 
 obj = Home("mahendra123")
