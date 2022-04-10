@@ -1,18 +1,17 @@
 import calendar
 import datetime
-from lib2to3.pgen2.token import NEWLINE
 import locale
 import time
 from tkinter import *
 from tkinter import messagebox as MessageBox
 from tkinter import ttk
 from tkinter.ttk import Notebook, Style
-from turtle import Screen, bgcolor, color
+from turtle import Screen, bgcolor, color, width
 import mysql.connector as mysql
 from tkcalendar import DateEntry
 import utilities as ut
 import schedule
-
+from matplotlib import pyplot as plt
 EX_CATEGORIES = ['Food', 'Clothing','Shopping', 'Entertainment', 'Education', 'Personal', 'Medical', 'Transportation', 'Bills', 'Others']
 PAY_WAYS = ['Cash', 'UPI', 'Cheque', 'Card']
 IN_CATEGORIES = ['Salary', 'Others']
@@ -20,7 +19,7 @@ IN_CATEGORIES = ['Salary', 'Others']
 
 class Home():
 
-    ###  Function to add new data to database
+    ###  Function to add new data to daNotebooksase
     def AddtoDB(self, a):
         con = mysql.connect(host='localhost', user='root',
                                         password='Mahendra@$28', database='expensetracker')
@@ -83,8 +82,22 @@ class Home():
             self.ExListView.insert('', 'end', values = i)
         for i in iSheetData:
             self.InListView.insert('', 'end', values = i)
-            
 
+    def show(self):
+        date1 = ut.dateFormat(self.getDate1.get())
+        date2 = ut.dateFormat(self.getDate2.get())
+        dateList = [date1, date2]
+        eSheetData = ut.analysisData(self.username, "e", dateList)
+        iSheetData = ut.analysisData(self.username, "i", dateList)
+        ePlotData = ut.getRefinedData(eSheetData)
+        iPlotData = ut.getRefinedData(iSheetData)
+        eLabellist = []
+        eAmountlist = []
+        for i in ePlotData:
+            eLabellist.append(i)
+            eAmountlist.append(ePlotData[i])
+        plt.bar(eLabellist, eAmountlist)
+        plt.show()
 
     def __init__(self, username):
         self.username = username
@@ -92,78 +105,79 @@ class Home():
         self.root.title("Expense Tracker")
         self.root.geometry('700x500+300+100')
         self.root.configure(bg='#b8c6db')
+        # self.root.state("zoomed")
         style = ttk.Style()
         style.theme_use('alt')
-        self.Tab = Notebook(self.root)
 
-        self.F1 = Frame(self.Tab)
-        self.F2 = Frame(self.Tab)
-        self.F3 = Frame(self.Tab)
+        self.Notebooks = Notebook(self.root)   
+        self.Notebooks.pack(fill=BOTH, expand=1)
 
-        self.Tab.add(self.F1, text='Expense')
-        self.Tab.add(self.F2, text='Income')
-        self.Tab.add(self.F3, text='Analysis')
+        self.F1 = Frame(self.Notebooks)
+        self.F2 = Frame(self.Notebooks)
+        self.F3 = Frame(self.Notebooks)
 
-        self.Tab.pack(fill=BOTH, expand=1)
+        self.Notebooks.add(self.F1, text='Expense')
+        self.Notebooks.add(self.F2, text='Income')
+        self.Notebooks.add(self.F3, text='Analysis')
 
         # # --------------Expense------------------
 
         self.LDate = Label(self.F1, text='Date', font=(None, 16))
-        self.LDate.grid(row=1, column=0, padx=5, pady=5, sticky='w')
+        self.LDate.grid(row=3, column=1, padx=5, pady=5, sticky='w')
 
         self.Edate = DateEntry(self.F1)
-        self.Edate.grid(row=1, column=1, padx=5, pady=5, sticky='w')
+        self.Edate.grid(row=3, column=2, padx=5, pady=5, sticky='w')
         # -------------------------------
 
         self.category = Label(self.F1, text='Category', font=(None, 16))
-        self.category.grid(row=2, column=0, padx=5, pady=5, sticky='w')
+        self.category.grid(row=4, column=1, padx=5, pady=5, sticky='w')
 
         self.choosed_cate = StringVar()
         self.choosed_cate.set(EX_CATEGORIES[0])
         self.Ecategory = OptionMenu(self.F1, self.choosed_cate, *EX_CATEGORIES)
         self.Ecategory.configure(highlightthickness=2, width=20)
-        self.Ecategory.grid(row=2, column=1, padx=5, pady=5, sticky='w')
+        self.Ecategory.grid(row=4, column=2, padx=5, pady=5, sticky='w')
 
         # --------------------------------
 
         self.LDescription = Label(self.F1, text='Description', font=(None, 16))
-        self.LDescription.grid(row=3, column=0, padx=5, pady=5, sticky='w')
+        self.LDescription.grid(row=5, column=1, padx=5, pady=5, sticky='w')
 
         self.ExDescription = Entry(self.F1,  font=(None, 18))
-        self.ExDescription.grid(row=3, column=1, padx=5, pady=5, sticky='w')
+        self.ExDescription.grid(row=5, column=2, padx=5, pady=5, sticky='w')
 
         self.DescFormat = Label(self.F1, text='" Single & Double quotes are not allowed ! "', font=(None, 10), fg="#FF0000")
-        self.DescFormat.grid(row=3, column=2, padx=5, pady=5, sticky='w')
+        self.DescFormat.grid(row=5, column=3, padx=5, pady=5, sticky='w')
 
         self.LAmount = Label(self.F1, text='Amount', font=(None, 16))
-        self.LAmount.grid(row=4, column=0, padx=5, pady=5, sticky='w')
+        self.LAmount.grid(row=6, column=1, padx=5, pady=5, sticky='w')
 
         self.ExAmount = Entry(self.F1,  font=(None, 18))
-        self.ExAmount.grid(row=4, column=1, padx=5, pady=5, sticky='w')
+        self.ExAmount.grid(row=6, column=2, padx=5, pady=5, sticky='w')
 
         self.LPay_meth = Label(self.F1, text='Paid By: ', font=(None, 16))
-        self.LPay_meth.grid(row=5, column=0, padx=5, pady=5, sticky='w')
+        self.LPay_meth.grid(row=7, column=1, padx=5, pady=5, sticky='w')
 
         self.choosed_method = StringVar()
         self.choosed_method.set(PAY_WAYS[0])
         self.ExPayMethod = OptionMenu(self.F1, self.choosed_method, *PAY_WAYS)
         self.ExPayMethod.configure(highlightthickness=2, width=20)
-        self.ExPayMethod.grid(row=5, column=1, padx=5, pady=5, sticky='w')
+        self.ExPayMethod.grid(row=7, column=2, padx=5, pady=5, sticky='w')
         # ---------------------------------
 
         BF1Add = Button(self.F1, text='Add Expense',command=lambda: Home.AddtoDB(self, "e"))
-        BF1Add.grid(row=6, column=1, padx=20, pady=5,
+        BF1Add.grid(row=8, column=2, padx=20, pady=5,
                     sticky='w', ipadx=10, ipady=10)
 
         self.Lbl = Label(self.F1, text='Recents', font=(None, 15))
-        self.Lbl.place(x = 15, y = 250)
+        self.Lbl.place(x = 10, y = 250)
 
         # ----------------------------------
 
         TVList = ['Date', 'Category', 'Description', 'Amount Spent', 'Paid Through']
         self.TVExpenses = ttk.Treeview(
             self.F1, columns=TVList, show='headings', height=7)
-        self.TVExpenses.place(x= 20, y= 285)
+        self.TVExpenses.place(x= 15, y= 285)
         self.TVExpenses.column("Date", minwidth=0, width=80, stretch=NO, anchor=CENTER)
         self.TVExpenses.column("Category", minwidth=0, width=120, stretch=NO)
         self.TVExpenses.column("Description", minwidth=0, width=250)
@@ -246,7 +260,7 @@ class Home():
 
 
         # --------------------Analysis-------------------
-
+        
         LDate = Label(self.F3, text='Choose Date: ', font=(None, 16))
         LDate.place(x = 10, y = 10)
 
@@ -266,6 +280,8 @@ class Home():
         self.BF1Add = Button(self.F3, text='Track',command=lambda: self.updateView())
         self.BF1Add.place(x = 300, y = 50)
 
+        self.BF2Add = Button(self.F3, text='Show Analysis',command=lambda: self.show())
+        self.BF2Add.place(x = 400, y = 50)
 
         ExList = ['Date', 'Category', 'Description', 'Amount Spent', 'Paid Through']
         self.ExListView = ttk.Treeview(

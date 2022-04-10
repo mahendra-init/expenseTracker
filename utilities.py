@@ -2,7 +2,9 @@ from datetime import date, datetime
 import mysql.connector as mysql
 import time
 from plyer import notification
-
+from matplotlib import pyplot as plt
+from matplotlib.figure import Figure
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 def send_notification():
     notification.notify(
@@ -32,7 +34,7 @@ def extractData(username, ie):
                                         password='Mahendra@$28', database='expensetracker')
         cursor = con.cursor()
         if(ie == 'e'):
-            cursor.execute("select* from expenses where username = '"+username+"' order by date DESC limit 7")
+            cursor.execute("select* from expenses where username = '"+username+"' order by date DESC limit 15")
             edata = cursor.fetchall()
             cursor.execute("commit")
             for i in edata:
@@ -41,7 +43,7 @@ def extractData(username, ie):
                 i[3] = int(i[3])
                 new_list.append(i[0:len(i)-1])
         elif(ie == 'i'):
-            cursor.execute("select* from incomes where username = '"+username+"' order by date DESC limit 5")
+            cursor.execute("select* from incomes where username = '"+username+"' order by date DESC limit 10")
             idata = cursor.fetchall()
             cursor.execute("commit")
             for i in idata:
@@ -76,4 +78,23 @@ def analysisData(username, ie, dates):
                 i[3] = int(i[3])
                 new_list.append(i[0:len(i)-1])
         con.close()
+
         return new_list
+
+
+edataList = analysisData("mahendra123", 'e', ["2022-04-01", "2022-05-01"])
+idataList = analysisData("mahendra123", 'i', ["2022-03-01", "2022-05-01"])
+def getRefinedData(ls):
+    newEdata = dict()
+    for i in ls:
+        i = list(i)
+        i[3] = int(i[3])
+        key = i[1]
+        val = i[3]
+        if key in newEdata:
+            sum = newEdata[key]
+            sum+= val
+            newEdata[key] = sum
+        else:
+            newEdata[key] = val
+    return newEdata
