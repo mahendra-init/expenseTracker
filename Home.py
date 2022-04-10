@@ -38,6 +38,8 @@ class Home():
                 cursor.execute("commit")
                 MessageBox.showinfo("Insert Status", "Inserted Successfully")
                 self.updateView()
+                self.ExDescription.delete(0, END)
+                self.ExAmount.delete(0, END)
         elif(a == "i"):
             date = ut.dateFormat(self.Idate.get())
             source = self.choosed_source.get()
@@ -50,6 +52,8 @@ class Home():
                 cursor.execute("commit")
                 MessageBox.showinfo("Insert Status", "Inserted Successfully")
                 self.updateView()
+                self.InDescription.delete(0, END)
+                self.EIncome.delete(0, END)
         con.close()
     
     
