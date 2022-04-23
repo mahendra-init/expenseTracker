@@ -64,7 +64,7 @@ class Login_Window():
         password.place(x=60, y=220)
 
         self.txtpass = Entry(frame, font=(
-            "times new roman", 15))
+            "times new roman", 15), show="*")
         self.txtpass.place(x=60, y=250)
 
         loginbtn = Button(frame, text="Login", font=("times new roman", 19, "bold"),

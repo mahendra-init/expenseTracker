@@ -10,7 +10,6 @@ from turtle import Screen, bgcolor, color, width
 import mysql.connector as mysql
 from tkcalendar import DateEntry
 import utilities as ut
-import schedule
 from matplotlib import pyplot as plt
 EX_CATEGORIES = ['Food', 'Clothing','Shopping', 'Entertainment', 'Education', 'Personal', 'Medical', 'Transportation', 'Bills', 'Others']
 PAY_WAYS = ['Cash', 'UPI', 'Cheque', 'Card']
@@ -19,7 +18,7 @@ IN_CATEGORIES = ['Salary', 'Others']
 
 class Home():
 
-    ###  Function to add new data to daNotebooksase
+    ###  Function to add new data to database
     def AddtoDB(self, a):
         con = mysql.connect(host='localhost', user='root',
                                         password='Mahendra@$28', database='expensetracker')
@@ -59,7 +58,7 @@ class Home():
     
     
 
-    ###    Func to update treeviews
+    ###    Func to update treeviews of analytics
     def updateView(self):
         self.TVExpenses.delete(*self.TVExpenses.get_children())
         self.TVIncome.delete(*self.TVIncome.get_children())
@@ -83,29 +82,13 @@ class Home():
         for i in iSheetData:
             self.InListView.insert('', 'end', values = i)
 
-    def show(self):
-        date1 = ut.dateFormat(self.getDate1.get())
-        date2 = ut.dateFormat(self.getDate2.get())
-        dateList = [date1, date2]
-        eSheetData = ut.analysisData(self.username, "e", dateList)
-        iSheetData = ut.analysisData(self.username, "i", dateList)
-        ePlotData = ut.getRefinedData(eSheetData)
-        iPlotData = ut.getRefinedData(iSheetData)
-        eLabellist = []
-        eAmountlist = []
-        for i in ePlotData:
-            eLabellist.append(i)
-            eAmountlist.append(ePlotData[i])
-        plt.bar(eLabellist, eAmountlist)
-        plt.show()
-
+    ###     Main Func 
     def __init__(self, username):
         self.username = username
         self.root = Tk()
         self.root.title("Expense Tracker")
         self.root.geometry('700x500+300+100')
         self.root.configure(bg='#b8c6db')
-        # self.root.state("zoomed")
         style = ttk.Style()
         style.theme_use('alt')
 
@@ -120,14 +103,14 @@ class Home():
         self.Notebooks.add(self.F2, text='Income')
         self.Notebooks.add(self.F3, text='Analysis')
 
-        # # --------------Expense------------------
+        # --------------Add Expense Frame------------------
 
         self.LDate = Label(self.F1, text='Date', font=(None, 16))
         self.LDate.grid(row=3, column=1, padx=5, pady=5, sticky='w')
 
         self.Edate = DateEntry(self.F1)
         self.Edate.grid(row=3, column=2, padx=5, pady=5, sticky='w')
-        # -------------------------------
+        
 
         self.category = Label(self.F1, text='Category', font=(None, 16))
         self.category.grid(row=4, column=1, padx=5, pady=5, sticky='w')
@@ -138,7 +121,7 @@ class Home():
         self.Ecategory.configure(highlightthickness=2, width=20)
         self.Ecategory.grid(row=4, column=2, padx=5, pady=5, sticky='w')
 
-        # --------------------------------
+   
 
         self.LDescription = Label(self.F1, text='Description', font=(None, 16))
         self.LDescription.grid(row=5, column=1, padx=5, pady=5, sticky='w')
@@ -163,16 +146,16 @@ class Home():
         self.ExPayMethod = OptionMenu(self.F1, self.choosed_method, *PAY_WAYS)
         self.ExPayMethod.configure(highlightthickness=2, width=20)
         self.ExPayMethod.grid(row=7, column=2, padx=5, pady=5, sticky='w')
-        # ---------------------------------
+  
 
-        BF1Add = Button(self.F1, text='Add Expense',command=lambda: Home.AddtoDB(self, "e"))
+        BF1Add = Button(self.F1, text='Add Expense',command=lambda: Home.AddtoDB(self, "e"), bg = '#4FD1F4')
         BF1Add.grid(row=8, column=2, padx=20, pady=5,
                     sticky='w', ipadx=10, ipady=10)
 
         self.Lbl = Label(self.F1, text='Recents', font=(None, 15))
         self.Lbl.place(x = 10, y = 250)
 
-        # ----------------------------------
+
 
         TVList = ['Date', 'Category', 'Description', 'Amount Spent', 'Paid Through']
         self.TVExpenses = ttk.Treeview(
@@ -188,22 +171,15 @@ class Home():
         for i in TVList:
             self.TVExpenses.heading(i, text=i.title())
 
-        # --------------------Expense End--------------
 
-
-
-
-
-
-
-        # --------------------Income-------------------
+        # --------------------Add Income Frame-------------------
 
         self.LDate2 = Label(self.F2, text='Date', font=(None, 18))
         self.LDate2.grid(row=1, column=0, padx=5, pady=5, sticky='w')
 
         self.Idate = DateEntry(self.F2)
         self.Idate.grid(row=1, column=1, padx=5, pady=5, sticky='w')
-        # -------------------------------
+        
 
 
         self.source = Label(self.F2, text='Source', font=(None, 18))
@@ -215,7 +191,7 @@ class Home():
         self.Icategory.configure(highlightthickness=2, width=15)
         self.Icategory.grid(row=2, column=1, padx=5, pady=5, sticky='w')
 
-        # --------------------------------
+     
         self.LDescription = Label(self.F2, text='Description', font=(None, 16))
         self.LDescription.grid(row=3, column=0, padx=5, pady=5, sticky='w')
 
@@ -225,7 +201,7 @@ class Home():
         self.DescFormat = Label(self.F2, text='" Single & Double quotes are not allowed ! "', font=(None, 10), fg="#FF0000")
         self.DescFormat.grid(row=3, column=2, padx=5, pady=5, sticky='w')
 
-        # --------------------------------
+ 
 
         self.LIncome = Label(self.F2, text='Income', font=(None, 18))
         self.LIncome.grid(row=4, column=0, padx=5, pady=5, sticky='w')
@@ -233,16 +209,16 @@ class Home():
         self.EIncome = Entry(self.F2, font=(None, 18))
         self.EIncome.grid(row=4, column=1, padx=5, pady=5, sticky='w')
 
-        # ---------------------------------
+
 
         BF2Add = Button(self.F2, text='Add Income',
-                        command=lambda: Home.AddtoDB(self, "i"))
+                        command=lambda: Home.AddtoDB(self, "i"), bg ='#4FD1F4')
         BF2Add.grid(row=5, column=1, padx=5, pady=5,
                     sticky='w', ipadx=10, ipady=10)
         
         self.Lbl = Label(self.F2, text='Recents', font=(None, 15))
         self.Lbl.place(x = 15, y = 250)
-        # ----------------------------------
+
         TV = ['Date', 'Source', 'Description', 'Income']
         self.TVIncome = ttk.Treeview(
             self.F2, columns=TV, show='headings', height=5)
@@ -254,34 +230,33 @@ class Home():
         for j in TV:
             self.TVIncome.heading(j, text=j.title())
 
-         # --------------------Income End--------------
 
-
-
-
-        # --------------------Analysis-------------------
+        # --------------------Analysis Frame-------------------
         
         LDate = Label(self.F3, text='Choose Date: ', font=(None, 16))
-        LDate.place(x = 10, y = 10)
+        LDate.place(x = 80, y = 10)
 
         self.getDate1 = DateEntry(self.F3)
-        self.getDate1.place(x = 180, y = 15)
+        self.getDate1.place(x = 250, y = 15)
 
         self.getDate2 = DateEntry(self.F3)
-        self.getDate2.place(x = 360, y = 15)
+        self.getDate2.place(x = 430, y = 15)
 
         Lb = Label(self.F3, text='to', font=(None, 15))
-        Lb.place(x = 300, y = 10)
+        Lb.place(x = 380, y = 10)
 
 
         self.Lbl = Label(self.F3, text='Expense Sheet:', font=(None, 15))
         self.Lbl.place(x = 5, y = 70)
 
-        self.BF1Add = Button(self.F3, text='Track',command=lambda: self.updateView())
-        self.BF1Add.place(x = 300, y = 50)
+        self.BF1Add = Button(self.F3, text='Track',command=lambda: self.updateView(), bg ='#4AF58D')
+        self.BF1Add.place(x = 200, y = 50)
 
-        self.BF2Add = Button(self.F3, text='Show Analysis',command=lambda: self.show())
-        self.BF2Add.place(x = 400, y = 50)
+        self.BF2Add = Button(self.F3, text='Expense Analysis',command=lambda: ut.show(self.username, self.getDate1.get(), self.getDate2.get(), "e"), bg ='#4FD1F4')
+        self.BF2Add.place(x = 270, y = 50)
+
+        self.BF3Add = Button(self.F3, text='Total Analysis',command=lambda: ut.show(self.username, self.getDate1.get(), self.getDate2.get(), "t"), bg ='#F06B1B')
+        self.BF3Add.place(x = 390, y = 50)
 
         ExList = ['Date', 'Category', 'Description', 'Amount Spent', 'Paid Through']
         self.ExListView = ttk.Treeview(
@@ -313,14 +288,7 @@ class Home():
         for i in InList:
             self.InListView.heading(i, text=i.title())
 
-
         self.updateView()   
         self.root.mainloop()
-
-        # schedule.every().day.at("05:27").do(ut.send_notification)
-        # while True:
-        #     schedule.run_pending()
-        #     time.sleep(1)
-
 
 Home("mahendra123")

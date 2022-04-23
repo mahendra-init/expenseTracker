@@ -1,17 +1,54 @@
+from cProfile import label
 from datetime import date, datetime
+from turtle import color
+from matplotlib.ft2font import BOLD
 import mysql.connector as mysql
-import time
-from plyer import notification
-from matplotlib import pyplot as plt
+from matplotlib import patches, pyplot as plt
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
-def send_notification():
-    notification.notify(
-    title = "It's time to update your expenses!!!",
-    timeout = 20
-    )
+def show(username, date1, date2, choice):
+    date1 = dateFormat(date1)
+    date2 = dateFormat(date2)
+    dateList = [date1, date2]
+    eSheetData = analysisData(username, "e", dateList)
+    ePlotData = getRefinedData(eSheetData)
+    iSheetData = analysisData(username, "i", dateList)
+    iPlotData = getRefinedData(iSheetData)
+    if(choice == "e"):
+        eLabellist = []
+        eAmountlist = []
+        for i in ePlotData:
+            eLabellist.append(i)
+            eAmountlist.append(ePlotData[i])
 
+        bars = plt.bar(eLabellist, eAmountlist, color = "#7D9EF9")
+        plt.bar_label(bars, labels=eAmountlist, color = "red", fontsize = 12)
+        plt.title("Category wise expense from {} to {}".format(date1, date2), fontsize = 25, color = "#5DADE2")
+        plt.ylabel("Amount in Rupees", color = "Red", fontsize = 20)
+        plt.xlabel("Categories", color = "green", fontsize = 20)
+        mng = plt.get_current_fig_manager()
+        mng.window.state('zoomed')
+        plt.show()
+        
+    elif(choice == "t"):
+        iSum = 0
+        exSum = 0
+        for item in iPlotData.keys():
+            iSum+=iPlotData[item]
+        for item in ePlotData.keys():
+            exSum+=ePlotData[item]
+        savings = iSum - exSum
+        list = [exSum, savings]
+        label = "Expense", "Savings"
+        label1 = ["Total Expense: {} Rs.".format(exSum), "Total Savings: {} Rs.".format(savings)]
+        explode = (0, 0.1)
+        plt.pie(list, labels= label, explode=explode, shadow=True,autopct='%1.1f%%', radius=0.8, textprops={'fontsize': 14})
+        plt.title("Expense Analysis from {} to {}".format(date1, date2), fontsize = 25, color = "#5DADE2")
+        plt.legend(label1, title ="Total Income: {} Rs.".format(iSum),  loc = "lower right")
+        mng = plt.get_current_fig_manager()
+        mng.window.state('zoomed')
+        plt.show()
 
 def dateFormat(date):
     cnt = 0
@@ -81,9 +118,7 @@ def analysisData(username, ie, dates):
 
         return new_list
 
-
-edataList = analysisData("mahendra123", 'e', ["2022-04-01", "2022-05-01"])
-idataList = analysisData("mahendra123", 'i', ["2022-03-01", "2022-05-01"])
+#Converts raw data fetched from database to useable dictionary form.
 def getRefinedData(ls):
     newEdata = dict()
     for i in ls:
