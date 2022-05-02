@@ -1,16 +1,10 @@
-import calendar
-import datetime
-import locale
-import time
 from tkinter import *
 from tkinter import messagebox as MessageBox
 from tkinter import ttk
-from tkinter.ttk import Notebook, Style
-from turtle import Screen, bgcolor, color, width
+from tkinter.ttk import Notebook
 import mysql.connector as mysql
 from tkcalendar import DateEntry
 import utilities as ut
-from matplotlib import pyplot as plt
 EX_CATEGORIES = ['Food', 'Clothing','Shopping', 'Entertainment', 'Education', 'Personal', 'Medical', 'Transportation', 'Bills', 'Others']
 PAY_WAYS = ['Cash', 'UPI', 'Cheque', 'Card']
 IN_CATEGORIES = ['Salary', 'Others']
@@ -291,4 +285,3 @@ class Home():
         self.updateView()   
         self.root.mainloop()
 
-Home("mahendra123")

@@ -1,13 +1,7 @@
 
-from cProfile import label
-from cgitb import text
-from logging import root
-from sqlite3 import Cursor
 from tkinter import*
 from tkinter import messagebox
-from turtle import bgcolor, color
 import mysql.connector as mysql
-import login
 
 
 class Sign_Window():
@@ -48,7 +42,7 @@ class Sign_Window():
         self.root.title("Sign In Page")
         self.root.geometry("1000x900+100+0")
         self.root.configure(bg='#b8c6db')
-
+        
 # ----------Frame----------------
         frame = Frame(self.root, bg="#9921e8", border=15)
         frame.place(x=275, y=50, width=450, height=550)
@@ -110,3 +104,4 @@ class Sign_Window():
 
 # ============================================
         self.root.mainloop()
+        

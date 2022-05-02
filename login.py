@@ -1,11 +1,5 @@
 
-from asyncio.windows_events import NULL
-from cProfile import label
-from cgitb import text
-from sqlite3 import Cursor
 from tkinter import*
-from tkinter import ttk
-from turtle import bgcolor, color
 import mysql.connector as mysql
 from home import*
 import signin
@@ -27,7 +21,6 @@ class Login_Window():
             if(data == None):
                 MessageBox.showerror("ERROR", "Invalid Credentials")
             else:
-                print(data)
                 MessageBox.showinfo("Login Status", "Login Successfully")
                 root.destroy()
                 h = Home(username)

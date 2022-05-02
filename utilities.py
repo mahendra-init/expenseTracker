@@ -1,11 +1,6 @@
-from cProfile import label
-from datetime import date, datetime
-from turtle import color
-from matplotlib.ft2font import BOLD
+from datetime import datetime
 import mysql.connector as mysql
-from matplotlib import patches, pyplot as plt
-from matplotlib.figure import Figure
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+from matplotlib import pyplot as plt
 
 def show(username, date1, date2, choice):
     date1 = dateFormat(date1)
